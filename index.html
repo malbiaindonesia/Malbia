@@ -9,11 +9,11 @@
     body {
       background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmnyrDHO5DL3RSID3uGIKWtJwQVFMNCgEy16LePPWc13R0uAKVbuAKs1DC&s=10');
       background-size: cover;
-      background-position: center;
+      background-attachment: fixed;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .card {
-      background: rgba(255, 255, 255, 0.95);
+      background: white;
       border-radius: 1rem;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
@@ -21,162 +21,161 @@
       transform: scale(1.2);
       margin-right: 8px;
     }
-    textarea, input, select {
-      background-color: #fff !important;
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start px-4 py-6">
   <!-- Logo Box -->
-  <div class="w-full max-w-3xl mb-4 p-4 rounded-xl shadow text-center bg-white bg-opacity-90">
-    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjv1tYjgd6TAuWmGIN31e7kO1TRfJD0RSj5KOB48mkffnlbMzBeuKnRM499S5iJqSQ3QhtKszm_kRWLQlESdjj96MwMWX4BVOaO2hm9dUB8Eq3zMLH4qwr5pzDQebU6yBz7qX75KIqJomi6nVyfjgYw_raW3jfeUZYit2hV9_WPyf_ekOkT39xX9Ir-QrX0/s800/1000067632.jpg" alt="Logo" class="mx-auto max-h-24 rounded-lg shadow">
+  <div class="w-full max-w-3xl mb-4 p-4 rounded-xl shadow text-center bg-white">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjv1tYjgd6TAuWmGIN31e7kO1TRfJD0RSj5KOB48mkffnlbMzBeuKnRM499S5iJqSQ3QhtKszm_kRWLQlESdjj96MwMWX4BVOaO2hm9dUB8Eq3zMLH4qwr5pzDQebU6yBz7qX75KIqJomi6nVyfjgYw_raW3jfeUZYit2hV9_WPyf_ekOkT39xX9Ir-QrX0/s800/1000067632.jpg" alt="Logo Kemendikbud" class="mx-auto max-h-20">
     <h1 class="text-3xl font-bold text-green-700 mt-2">Kuis Interaktif Malbia</h1>
-    <p class="text-sm text-gray-600">Website Kuis Edukasi Buatan Indonesia</p>
-  </div>  <!-- Konten Utama -->  <div class="card p-6 w-full max-w-3xl">
+    <p class="text-sm text-gray-600">Online | Ringan | Tanpa Error</p>
+  </div>  <!-- Area Konten -->  <div class="card p-6 w-full max-w-3xl">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <button onclick="buatSoal()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Buat Soal</button>
+      <button onclick="tampilFormBuatSoal()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Buat Soal</button>
       <button onclick="kerjakanSoal()" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">Kerjakan Soal</button>
       <button onclick="lihatLaporan()" class="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded">Laporan</button>
       <button onclick="hapusSoal()" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Hapus Soal</button>
     </div>
-    <div id="konten" class="p-4 border rounded bg-white min-h-[150px]">Selamat Datang Di Sistem Kuis Online. Silakan Pilih Menu Yang Tersedia Untuk Membuat Soal</div>
-  </div>  <script>
-    let dataSoal = {};
-    if (!document.getElementById('soal-store')) {
-      const script = document.createElement('script');
-      script.id = 'soal-store';
-      script.type = 'application/json';
-      script.textContent = '{}';
-      document.body.appendChild(script);
-    }
-    try {
-      dataSoal = JSON.parse(document.getElementById('soal-store').textContent);
-    } catch {}
+    <div id="konten" class="p-4 border rounded bg-white min-h-[150px]">Silakan pilih menu di atas untuk mulai.</div>
+  </div>  <!-- Script Inti -->  <script>
+    const konten = document.getElementById("konten");
+    const bankSoal = {};
+    const laporan = {};
 
-    const konten = document.getElementById('konten');
-
-    function simpanData() {
-      document.getElementById('soal-store').textContent = JSON.stringify(dataSoal);
-    }
-
-    function buatSoal() {
+    function tampilFormBuatSoal() {
       konten.innerHTML = `
-        <form id="formBuat" class="space-y-4">
-          <h2 class="text-xl font-bold text-green-700">Buat Soal Baru</h2>
-          <input type="text" id="kode" class="border p-2 rounded w-full" placeholder="Kode Soal (misal: OSN.MTK)" required>
-          <input type="text" id="judul" class="border p-2 rounded w-full" placeholder="Judul Soal" required>
-          <input type="number" id="waktu" class="border p-2 rounded w-full" placeholder="Durasi (menit)" min="1" required>
-          <div id="daftarSoal" class="space-y-6"></div>
-          <button type="button" onclick="tambahSoalForm()" class="bg-green-500 text-white px-3 py-1 rounded">+ Tambah Soal</button>
-          <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Simpan Semua</button>
-        </form>`;
-      tambahSoalForm();
-      document.getElementById('formBuat').onsubmit = e => {
-        e.preventDefault();
-        const kode = document.getElementById('kode').value.trim();
-        const judul = document.getElementById('judul').value.trim();
-        const waktu = parseInt(document.getElementById('waktu').value);
-        const soal = [];
-        document.querySelectorAll('.blok-soal').forEach(blok => {
-          const jenis = blok.querySelector('.jenis').value;
-          const pertanyaan = blok.querySelector('.pertanyaan').value.trim();
-          const poin = parseInt(blok.querySelector('.poin').value);
-          const gambar = blok.querySelector('.previewImg')?.dataset.imgsrc || "";
-          let item = { jenis, pertanyaan, poin, gambar };
-          if (jenis === 'pg' || jenis === 'pgc') {
-            const opsi = {};
-            blok.querySelectorAll('.jawabOpsi').forEach((el, i) => {
-              opsi[['a','b','c','d'][i]] = el.value;
-            });
-            item.opsi = opsi;
-            if (jenis === 'pg') {
-              item.jawaban = blok.querySelector('input[type="radio"]:checked')?.value;
-            } else {
-              item.jawaban = Array.from(blok.querySelectorAll('.pgcBenar:checked')).map(cb => cb.value);
-            }
-          } else {
-            item.jawaban = blok.querySelector('.jawabIsian').value.toLowerCase().split(',').map(j => j.trim());
-          }
-          soal.push(item);
-        });
-        dataSoal[kode] = { judul, waktu, soal, hasil: [] };
-        simpanData();
-        konten.innerHTML = `<p class='text-green-600 font-bold'>✅ Soal disimpan sebagai kode: ${kode}</p>`;
-      };
+        <h2 class='text-xl font-bold mb-2 text-green-800'>Buat Soal</h2>
+        <form id='formSoal' class='space-y-4'>
+          <input type='text' id='kode' placeholder='Kode Soal (unik)' class='w-full p-2 border rounded' required>
+          <input type='text' id='judul' placeholder='Judul Soal' class='w-full p-2 border rounded'>
+          <input type='number' id='durasi' placeholder='Durasi (menit)' class='w-full p-2 border rounded'>
+          <div id='daftarSoal'></div>
+          <button type='button' onclick='tambahSoal()' class='bg-green-500 text-white px-3 py-2 rounded'>+ Tambah Soal</button>
+          <button type='submit' class='bg-blue-600 text-white px-3 py-2 rounded'>Simpan Soal</button>
+        </form>
+      `;
+      tambahSoal();
+      document.getElementById('formSoal').onsubmit = simpanSoal;
     }
 
-    function tambahSoalForm() {
+    function tambahSoal() {
       const div = document.createElement('div');
-      div.className = 'blok-soal border p-3 rounded bg-gray-50';
+      div.className = 'border p-3 rounded space-y-2 bg-gray-50 mt-2';
       div.innerHTML = `
-        <h3 class="font-bold text-green-600">Soal</h3>
-        <select class="jenis border p-1 rounded w-full mb-2" onchange="renderJawaban(this)">
-          <option value="pg">Pilihan Ganda</option>
-          <option value="pgc">Pilihan Ganda Kompleks</option>
-          <option value="isian">Isian Singkat</option>
-        </select>
-        <textarea class="pertanyaan border p-2 rounded w-full" rows="2" placeholder="Tulis pertanyaan di sini"></textarea><input type="file" class="gambarInput w-full mb-2" accept="image/*">
-    <img class="previewImg max-h-32 mb-2 hidden" />
-    <div class="inputJawaban"></div>
-    <input type="number" class="poin border p-2 rounded w-full" placeholder="Poin soal" min="1">
+        <textarea placeholder='Pertanyaan' class='pertanyaan w-full p-2 border rounded'></textarea><select class='jenis w-full p-2 border rounded' onchange='renderOpsi(this)'>
+      <option value='pg'>Pilihan Ganda</option>
+      <option value='pgc'>Ganda Kompleks</option>
+      <option value='isian'>Isian Singkat</option>
+    </select>
+    <div class='opsi'></div>
+    <input type='number' class='poin w-full p-2 border rounded' placeholder='Poin soal'>
   `;
   document.getElementById('daftarSoal').appendChild(div);
-  renderJawaban(div.querySelector('.jenis'));
-  div.querySelector('.gambarInput').onchange = function(e) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-      div.querySelector('.previewImg').src = reader.result;
-      div.querySelector('.previewImg').classList.remove('hidden');
-      div.querySelector('.previewImg').dataset.imgsrc = reader.result;
-    }
-    if (file) reader.readAsDataURL(file);
+  renderOpsi(div.querySelector('.jenis'));
+}
+
+function renderOpsi(select) {
+  const jenis = select.value;
+  const container = select.parentElement.querySelector('.opsi');
+  if (jenis === 'pg') {
+    container.innerHTML = ['a','b','c','d'].map(o=>`<label>${o.toUpperCase()}: <input class='jawaban w-2/3 p-1 border rounded'> <input type='radio' name='pg-${Date.now()}' value='${o}'> Benar</label>`).join('<br>');
+  } else if (jenis === 'pgc') {
+    container.innerHTML = ['a','b','c','d'].map(o=>`<label>${o.toUpperCase()}: <input class='jawaban w-2/3 p-1 border rounded'> <input type='checkbox' value='${o}' class='benarPgc'> Benar</label>`).join('<br>');
+  } else {
+    container.innerHTML = `<input placeholder='Jawaban benar (pisahkan koma)' class='jawabanIsian w-full p-2 border rounded'>`;
   }
 }
 
-function renderJawaban(select) {
-  const jenis = select.value;
-  const container = select.parentElement.querySelector('.inputJawaban');
-  if (jenis === 'pg') {
-    container.innerHTML = ['a','b','c','d'].map(huruf => `
-      <label class="block">${huruf.toUpperCase()}. <input class="jawabOpsi border p-1 ml-2 w-2/3"> <input type="radio" name="pg-${Date.now()}" value="${huruf}" class="ml-2"> Benar</label>`
-    ).join('');
-  } else if (jenis === 'pgc') {
-    container.innerHTML = ['a','b','c','d'].map(huruf => `
-      <label class="block">${huruf.toUpperCase()}. <input class="jawabOpsi border p-1 ml-2 w-2/3"> <input type="checkbox" value="${huruf}" class="pgcBenar ml-2"> Benar</label>`
-    ).join('');
-  } else {
-    container.innerHTML = `<input class="jawabIsian border p-2 rounded w-full" placeholder="Jawaban benar (pisahkan dengan koma)">`;
-  }
+function simpanSoal(e) {
+  e.preventDefault();
+  const kode = document.getElementById('kode').value.trim();
+  const judul = document.getElementById('judul').value.trim();
+  const durasi = parseInt(document.getElementById('durasi').value);
+  const soal = [];
+  document.querySelectorAll('#daftarSoal > div').forEach(blok => {
+    const jenis = blok.querySelector('.jenis').value;
+    const pertanyaan = blok.querySelector('.pertanyaan').value.trim();
+    const poin = parseInt(blok.querySelector('.poin').value);
+    const item = { jenis, pertanyaan, poin };
+    if (jenis === 'pg' || jenis === 'pgc') {
+      const opsi = {};
+      blok.querySelectorAll('.jawaban').forEach((el,i) => opsi[['a','b','c','d'][i]] = el.value);
+      item.opsi = opsi;
+      if (jenis === 'pg') {
+        item.jawaban = blok.querySelector('input[type=radio]:checked')?.value;
+      } else {
+        item.jawaban = Array.from(blok.querySelectorAll('.benarPgc:checked')).map(c=>c.value);
+      }
+    } else {
+      item.jawaban = blok.querySelector('.jawabanIsian').value.toLowerCase().split(',').map(s=>s.trim());
+    }
+    soal.push(item);
+  });
+  bankSoal[kode] = { judul, durasi, soal };
+  laporan[kode] = [];
+  konten.innerHTML = `<p class='text-green-700 font-bold'>✅ Soal disimpan sebagai kode: ${kode}</p>`;
 }
 
 function kerjakanSoal() {
-  const kode = prompt('Masukkan kode soal:');
-  if (!dataSoal[kode]) return alert('Kode soal tidak ditemukan!');
-  alert('Fitur kerjakan soal dalam proses lanjutan.');
+  const kode = prompt("Masukkan kode soal:");
+  if (!bankSoal[kode]) return alert("Kode tidak ditemukan!");
+  const data = bankSoal[kode];
+  let index = 0;
+  let skor = 0;
+  const total = data.soal.reduce((a,b)=>a+b.poin,0);
+  function tampil() {
+    if (!data.soal[index]) {
+      const nama = prompt("Masukkan nama Anda:");
+      laporan[kode].push({ nama, skor, total });
+      return konten.innerHTML = `<p class='text-green-600'>✅ Selesai! Skor kamu: ${skor}/${total}</p>`;
+    }
+    const s = data.soal[index];
+    let html = `<h3 class='font-bold'>${index+1}. ${s.pertanyaan}</h3>`;
+    if (s.jenis === 'pg') {
+      html += Object.entries(s.opsi).map(([k,v]) => `<label><input type='radio' name='jwb' value='${k}'> ${k.toUpperCase()}. ${v}</label><br>`).join('');
+    } else if (s.jenis === 'pgc') {
+      html += Object.entries(s.opsi).map(([k,v]) => `<label><input type='checkbox' value='${k}' class='pgc'> ${k.toUpperCase()}. ${v}</label><br>`).join('');
+    } else {
+      html += `<input id='isian' class='w-full p-2 border rounded'>`;
+    }
+    html += `<button onclick='cek()' class='mt-3 bg-green-700 text-white px-4 py-2 rounded'>Jawab</button>`;
+    konten.innerHTML = html;
+  }
+  window.cek = function() {
+    const s = data.soal[index];
+    let benar = false;
+    if (s.jenis === 'pg') {
+      const j = document.querySelector('input[name=jwb]:checked')?.value;
+      benar = j === s.jawaban;
+    } else if (s.jenis === 'pgc') {
+      const j = Array.from(document.querySelectorAll('.pgc:checked')).map(x=>x.value).sort();
+      benar = JSON.stringify(j) === JSON.stringify(s.jawaban.sort());
+    } else {
+      const j = document.getElementById('isian').value.toLowerCase().trim();
+      benar = s.jawaban.includes(j);
+    }
+    if (benar) skor += s.poin;
+    index++; tampil();
+  }
+  tampil();
 }
 
 function lihatLaporan() {
-  const kode = prompt('Masukkan kode soal:');
-  if (!dataSoal[kode] || dataSoal[kode].hasil.length === 0) return alert('Belum ada laporan.');
-  let html = `<h2 class='font-bold mb-2'>Laporan Nilai - ${kode}</h2><ul class='list-disc pl-5'>`;
-  dataSoal[kode].hasil.forEach(l => {
-    html += `<li>${l.nama}: ${l.skor}</li>`;
-  });
-  html += '</ul>';
+  const kode = prompt("Masukkan kode soal:");
+  if (!laporan[kode]?.length) return alert("Belum ada data.");
+  let html = `<h3 class='font-bold'>Laporan: ${kode}</h3><ul class='list-disc pl-5'>`;
+  laporan[kode].forEach(l => html += `<li>${l.nama}: ${l.skor}/${l.total}</li>`);
+  html += `</ul>`;
   konten.innerHTML = html;
 }
 
 function hapusSoal() {
-  const kode = prompt('Masukkan kode soal yang ingin dihapus:');
-  if (dataSoal[kode]) {
-    if (confirm('Yakin ingin menghapus soal ini?')) {
-      delete dataSoal[kode];
-      simpanData();
-      alert('Soal berhasil dihapus.');
-    }
-  } else {
-    alert('Kode soal tidak ditemukan.');
+  const kode = prompt("Masukkan kode soal yang ingin dihapus:");
+  if (!bankSoal[kode]) return alert("Kode tidak ditemukan!");
+  if (confirm("Yakin hapus soal ini?")) {
+    delete bankSoal[kode];
+    delete laporan[kode];
+    konten.innerHTML = `<p class='text-red-600'>❌ Soal ${kode} dihapus!</p>`;
   }
 }
 
